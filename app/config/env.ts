@@ -2,10 +2,19 @@ import "dotenv/config";
 
 /*===== Environment =====*/
 
-if (!process.env["DATABASE_URL"]) {
-  throw new Error("DATABASE_URL is not set");
+function requiredEnvironmentVariable(name: string) {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`${name} is not set`);
+  }
+
+  return value;
 }
 
 export const env = {
-  databaseUrl: process.env["DATABASE_URL"],
+  databaseUrl: requiredEnvironmentVariable("DATABASE_URL"),
+  get altchaHmacSecret() {
+    return requiredEnvironmentVariable("ALTCHA_HMAC_SECRET");
+  },
 } as const;

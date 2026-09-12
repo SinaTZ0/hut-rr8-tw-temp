@@ -9,8 +9,11 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
     "@react-router/node": "^8",
     "@react-router/serve": "^8",
+    "altcha": "^3.2.2",
+    "altcha-lib": "^2.5.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^1.0.0-rc.4",
     "isbot": "^5.1.36",

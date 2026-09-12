@@ -5,6 +5,7 @@ const quickFooterLinks = [
   ["اعضای هیئت علمی", "https://hut.ac.ir/faculty"],
   ["گروه‌های آموزشی", "https://hut.ac.ir/groups"],
   ["فرم‌ها و آیین‌نامه‌ها", "https://hut.ac.ir/university-forms"],
+  ["ثبت شکایات و پیشنهادات", "/complaints-and-feedback"],
   ["دفترچه تلفن", "https://hut.ac.ir/phonebook"],
   ["نقشه سایت", "https://hut.ac.ir/sitemap"],
 ] as const;
