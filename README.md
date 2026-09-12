@@ -34,6 +34,16 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
+## Database
+
+Set `DATABASE_URL`, then apply the committed migrations before starting the app:
+
+```bash
+npm run db:migrate
+```
+
+Homepage statistics trust the first value in `X-Forwarded-For`, then `X-Real-IP`. In production, the reverse proxy must overwrite these headers and the app server must not be directly reachable by clients.
+
 ## Building for Production
 
 Create a production build:

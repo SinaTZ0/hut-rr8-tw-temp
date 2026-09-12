@@ -1317,6 +1317,90 @@
     font-size: 0.82rem;
   }
 
+  /* Website statistics */
+  .hut-modern .hut-website-stats {
+    color: #fff;
+    background: linear-gradient(110deg, var(--hut-color-brand-deep), var(--hut-color-brand));
+  }
+
+  .hut-modern .hut-website-stats__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.45fr);
+    align-items: center;
+    gap: 40px;
+  }
+
+  .hut-modern .hut-website-stats__intro h2 {
+    margin-bottom: 10px;
+    color: #fff;
+    font-size: clamp(1.55rem, 3vw, 2.35rem);
+    line-height: 1.45;
+  }
+
+  .hut-modern .hut-website-stats__intro p {
+    max-width: 380px;
+    margin: 0;
+    color: #c5d9dd;
+    font-size: 0.85rem;
+  }
+
+  .hut-modern .hut-website-stats__panel {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 22px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--hut-radius-md);
+  }
+
+  .hut-modern .hut-website-stats__icon {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    color: var(--hut-color-brand-deep);
+    background: var(--hut-color-highlight);
+    border-radius: 15px;
+  }
+
+  .hut-modern .hut-website-stats__icon .hut-icon {
+    width: 27px;
+    height: 27px;
+  }
+
+  .hut-modern .hut-website-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .hut-modern .hut-website-stats__item {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .hut-modern .hut-website-stats__value {
+    color: var(--hut-color-highlight);
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-weight: 900;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hut-modern .hut-website-stats__label {
+    color: #c5d9dd;
+    font-size: 0.68rem;
+    line-height: 1.45;
+  }
+
+  .hut-modern .hut-website-stats__status {
+    color: #ffdbdb;
+    font-size: 0.8rem;
+  }
+
   .hut-modern .hut-footer {
     color: #c8d7db;
     background: var(--hut-color-brand-deep);
@@ -1397,75 +1481,6 @@
     width: 18px;
     color: var(--hut-color-highlight);
     margin-top: 4px;
-  }
-
-  .hut-modern .hut-site-stats {
-    display: flex;
-    align-items: flex-start;
-    gap: 13px;
-    margin-top: 22px;
-    padding: 14px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.11);
-    border-radius: 14px;
-  }
-
-  .hut-modern .hut-site-stats__icon {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-    color: var(--hut-color-brand);
-    background: var(--hut-color-highlight);
-    border-radius: 11px;
-  }
-
-  .hut-modern .hut-site-stats__body {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .hut-modern .hut-site-stats__title {
-    display: block;
-    margin-bottom: 8px;
-    color: #fff;
-    font-size: 0.72rem;
-  }
-
-  .hut-modern .hut-site-stats__grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px 12px;
-  }
-
-  .hut-modern .hut-site-stats__item {
-    display: grid;
-    min-width: 0;
-  }
-
-  .hut-modern .hut-site-stats__value {
-    color: var(--hut-color-highlight);
-    font-size: 1.12rem;
-    font-weight: 900;
-    line-height: 1.35;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .hut-modern .hut-site-stats__label {
-    color: #9eb5bc;
-    font-size: 0.61rem;
-    line-height: 1.45;
-  }
-
-  .hut-modern .hut-site-stats__status {
-    margin: 0;
-    color: #9eb5bc;
-    font-size: 0.65rem;
-  }
-
-  .hut-modern .hut-site-stats__status.is-error {
-    color: #ffb8b8;
   }
 
   .hut-modern .hut-socials {
@@ -1756,6 +1771,10 @@
       flex-direction: column;
     }
 
+    .hut-modern .hut-website-stats__inner {
+      grid-template-columns: 1fr;
+    }
+
     .hut-modern .hut-footer__grid {
       grid-template-columns: 1fr 1fr;
       gap: 38px 25px;
@@ -1863,6 +1882,14 @@
     }
 
     .hut-modern .hut-stats {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .hut-modern .hut-website-stats__panel {
+      grid-template-columns: 1fr;
+    }
+
+    .hut-modern .hut-website-stats__grid {
       grid-template-columns: 1fr 1fr;
     }
 

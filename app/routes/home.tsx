@@ -11,7 +11,9 @@ import { Header } from "../components/home/Header";
 import { HeroSection } from "../components/home/HeroSection";
 import { NewsSection } from "../components/home/NewsSection";
 import { QuickAccessSection } from "../components/home/QuickAccessSection";
+import { WebsiteStatsSection } from "../components/home/WebsiteStatsSection";
 import { styles } from "../components/home/common";
+import { recordHomepageVisit } from "../lib/website-stats.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -24,7 +26,22 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+export function headers() {
+  return {
+    "Cache-Control": "no-store",
+  };
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  try {
+    return { stats: await recordHomepageVisit(request) };
+  } catch (error) {
+    console.error("Website statistics update failed", error);
+    return { stats: null };
+  }
+}
+
+export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <div className={styles["hut-modern"]} id="hutModernPage">
       <a className={styles["hut-skip-link"]} href="#hut-main">
@@ -43,6 +60,7 @@ export default function Home() {
         <AchievementsSection />
         <EventsSection />
         <CallToActionSection />
+        <WebsiteStatsSection stats={loaderData.stats} />
       </main>
 
       <FloatingLinks />

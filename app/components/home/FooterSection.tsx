@@ -89,37 +89,6 @@ export function FooterSection() {
             </li>
           </ul>
 
-          <div className={styles["hut-site-stats"]} aria-labelledby="hutSiteStatsTitle">
-            <span className={styles["hut-site-stats__icon"]}>
-              <Icon name="chart" />
-            </span>
-            <span className={styles["hut-site-stats__body"]}>
-              <span className={styles["hut-site-stats__title"]} id="hutSiteStatsTitle">
-                آمار وب‌سایت
-              </span>
-              <span className={styles["hut-site-stats__status"]} role="status" hidden>
-                آمار در دسترس نیست
-              </span>
-              <span className={styles["hut-site-stats__grid"]}>
-                <span className={styles["hut-site-stats__item"]}>
-                  <strong className={styles["hut-site-stats__value"]}>۵</strong>
-                  <span className={styles["hut-site-stats__label"]}>بازدید امروز</span>
-                </span>
-                <span className={styles["hut-site-stats__item"]}>
-                  <strong className={styles["hut-site-stats__value"]}>۱,۷۲۸</strong>
-                  <span className={styles["hut-site-stats__label"]}>کل بازدیدها</span>
-                </span>
-                <span className={styles["hut-site-stats__item"]}>
-                  <strong className={styles["hut-site-stats__value"]}>۱</strong>
-                  <span className={styles["hut-site-stats__label"]}>کاربران امروز</span>
-                </span>
-                <span className={styles["hut-site-stats__item"]}>
-                  <strong className={styles["hut-site-stats__value"]}>۳۸۶</strong>
-                  <span className={styles["hut-site-stats__label"]}>کل کاربران</span>
-                </span>
-              </span>
-            </span>
-          </div>
         </div>
       </div>
       <div className={cx(styles["hut-container"], styles["hut-footer__bottom"])}>

@@ -1,4 +1,20 @@
-import { index, integer, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+import {
+  bigint,
+  check,
+  date,
+  index,
+  inet,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const feedbackTypeEnum = pgEnum("feedback_type", ["complaint", "suggestion"]);
 export const consultationGenderEnum = pgEnum("consultation_gender", ["unknown", "male", "female"]);
@@ -66,3 +82,19 @@ export const consultationSubmissions = pgTable(
 );
 
 export type ConsultationSubmissionInsert = typeof consultationSubmissions.$inferInsert;
+
+export const websiteStats = pgTable("website_stats", {
+  id: integer("id").primaryKey(),
+  statsDate: date("stats_date", { mode: "string" }).notNull(),
+  todayVisitCount: bigint("today_visit_count", { mode: "number" }).notNull().default(0),
+  todayUserCount: bigint("today_user_count", { mode: "number" }).notNull().default(0),
+  totalVisitCount: bigint("total_visit_count", { mode: "number" }).notNull().default(0),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  singletonIdCheck: check("website_stats_singleton_id_check", sql`${table.id} = 1`),
+}));
+
+export const websiteDailyUsers = pgTable("website_daily_users", {
+  ipAddress: inet("ip_address").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
