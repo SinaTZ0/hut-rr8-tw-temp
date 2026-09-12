@@ -7,6 +7,7 @@ const quickFooterLinks = [
   ["فرم‌ها و آیین‌نامه‌ها", "https://hut.ac.ir/university-forms"],
   ["ثبت شکایات و پیشنهادات", "/complaints-and-feedback"],
   ["مشاوره آنلاین", "/online-consultation"],
+  ["حریم خصوصی و حفاظت از داده‌ها", "/privacy-and-data-protection"],
   ["دفترچه تلفن", "https://hut.ac.ir/phonebook"],
   ["نقشه سایت", "https://hut.ac.ir/sitemap"],
 ] as const;

@@ -12,6 +12,7 @@ const navigationGroups = [
       ["حوزه ریاست", "https://hut.ac.ir/%D8%AD%D9%88%D8%B2%D9%87-%D8%B1%DB%8C%D8%A7%D8%B3%D8%AA"],
       ["فرم‌ها و آیین‌نامه‌ها", "https://hut.ac.ir/university-forms"],
       ["دفترچه تلفن", "https://hut.ac.ir/%D8%AA%D9%84%D9%81%D9%86-%D8%AF%D8%A7%D8%AE%D9%84%DB%8C"],
+      ["حریم خصوصی و حفاظت از داده‌ها", "/privacy-and-data-protection"],
     ],
   },
   {
