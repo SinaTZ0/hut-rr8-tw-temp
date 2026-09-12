@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 
 import brandingLogo from "../../assets/branding-navbar-logo.png";
 import { cx, Icon, styles } from "./common";
@@ -256,11 +257,17 @@ export function Header() {
                     <Icon name="chevron" className={styles["hut-nav__chevron"]} />
                   </button>
                   <div className={cx(styles["hut-dropdown"], isOpen && styles["is-open"])}>
-                    {group.links.map(([label, href]) => (
-                      <a href={href} key={label}>
-                        {label}
-                      </a>
-                    ))}
+                    {group.links.map(([label, href]) =>
+                      href.startsWith("/") ? (
+                        <Link to={href} key={label}>
+                          {label}
+                        </Link>
+                      ) : (
+                        <a href={href} key={label}>
+                          {label}
+                        </a>
+                      ),
+                    )}
                   </div>
                 </div>
               );

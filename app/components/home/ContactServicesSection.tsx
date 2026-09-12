@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import { cx, Icon, useReveal, styles } from "./common";
 
 const contactServices = [
@@ -27,7 +29,7 @@ function ContactServiceCard({
   const reveal = useReveal<HTMLAnchorElement>();
 
   return (
-    <a ref={reveal.ref} className={cx(styles["hut-contact-service"], reveal.className)} href={href}>
+    <Link ref={reveal.ref} className={cx(styles["hut-contact-service"], reveal.className)} to={href}>
       <span className={styles["hut-contact-service__icon"]}>
         <Icon name={icon} />
       </span>
@@ -38,7 +40,7 @@ function ContactServiceCard({
       <span className={styles["hut-contact-service__action"]}>
         {action} <span aria-hidden="true">←</span>
       </span>
-    </a>
+    </Link>
   );
 }
 

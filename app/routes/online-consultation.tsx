@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { AltchaWidgetElement } from "altcha/types/generic";
 import type { Route } from "./+types/online-consultation";
 import { useEffect, useRef, useState } from "react";
-import { data, useFetcher, useRevalidator } from "react-router";
+import { data, Link, useFetcher, useRevalidator } from "react-router";
 import type {} from "altcha/types/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -187,9 +187,9 @@ function SuccessCard({ trackingCode, onNewSubmission }: { trackingCode: string; 
           </button>
         </div>
         <div className={pageStyles.successActions}>
-          <a className={cx(homeStyles["hut-button"], homeStyles["hut-button--light"])} href="/">
+          <Link className={cx(homeStyles["hut-button"], homeStyles["hut-button--light"])} to="/">
             بازگشت به صفحه اصلی
-          </a>
+          </Link>
           <button
             className={cx(homeStyles["hut-button"], homeStyles["hut-button--teal"])}
             type="button"

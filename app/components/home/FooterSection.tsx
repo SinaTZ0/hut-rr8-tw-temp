@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import brandingLogo from "../../assets/branding-navbar-logo.png";
 import { cx, Icon, styles } from "./common";
 
@@ -54,11 +56,17 @@ export function FooterSection() {
         <div className={styles["hut-footer__column"]}>
           <h3>دسترسی سریع</h3>
           <nav className={styles["hut-footer__links"]}>
-            {quickFooterLinks.map(([label, href]) => (
-              <a href={href} key={label}>
-                {label}
-              </a>
-            ))}
+            {quickFooterLinks.map(([label, href]) =>
+              href.startsWith("/") ? (
+                <Link to={href} key={label}>
+                  {label}
+                </Link>
+              ) : (
+                <a href={href} key={label}>
+                  {label}
+                </a>
+              ),
+            )}
           </nav>
         </div>
 
