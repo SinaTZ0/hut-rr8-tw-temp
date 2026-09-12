@@ -4,6 +4,7 @@ import { AchievementsSection, EventsSection } from "../components/home/CardSecti
 import { CalendarSection } from "../components/home/CalendarSection";
 import { CampusStorySection } from "../components/home/CampusStorySection";
 import { CallToActionSection } from "../components/home/CallToActionSection";
+import { ContactServicesSection } from "../components/home/ContactServicesSection";
 import { FloatingLinks } from "../components/home/FloatingLinks";
 import { FooterSection } from "../components/home/FooterSection";
 import { Header } from "../components/home/Header";
@@ -37,6 +38,7 @@ export default function Home() {
         <QuickAccessSection />
         <NewsSection />
         <CalendarSection />
+        <ContactServicesSection />
         <CampusStorySection />
         <AchievementsSection />
         <EventsSection />

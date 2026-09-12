@@ -711,6 +711,105 @@
     height: 24px;
   }
 
+  /* Contact services */
+  .hut-modern .hut-contact-services {
+    background: var(--hut-color-canvas);
+  }
+
+  .hut-modern .hut-contact-services__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .hut-modern .hut-contact-service {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+    padding: 24px;
+    color: var(--hut-color-heading);
+    background: var(--hut-color-surface);
+    border: 1px solid var(--hut-color-border);
+    border-radius: var(--hut-radius-md);
+    box-shadow: var(--hut-shadow-sm);
+    overflow: hidden;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .hut-modern .hut-contact-service::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, var(--hut-color-accent), var(--hut-color-highlight));
+    transform: scaleX(0.35);
+    transform-origin: right;
+    transition: transform 0.25s ease;
+  }
+
+  .hut-modern .hut-contact-service:hover {
+    border-color: var(--hut-color-accent);
+    box-shadow: var(--hut-shadow-lg);
+    transform: translateY(-5px);
+  }
+
+  .hut-modern .hut-contact-service:hover::before {
+    transform: scaleX(1);
+  }
+
+  .hut-modern .hut-contact-service__icon {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    color: var(--hut-color-accent);
+    background: var(--hut-color-accent-soft);
+    border-radius: 17px;
+  }
+
+  .hut-modern .hut-contact-service__icon .hut-icon {
+    width: 27px;
+    height: 27px;
+  }
+
+  .hut-modern .hut-contact-service__body {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .hut-modern .hut-contact-service__body strong {
+    color: var(--hut-color-heading);
+    font-size: 1.05rem;
+  }
+
+  .hut-modern .hut-contact-service__body span {
+    color: var(--hut-color-text-muted);
+    font-size: 0.76rem;
+    line-height: 1.8;
+  }
+
+  .hut-modern .hut-contact-service__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--hut-color-accent);
+    font-size: 0.76rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .hut-modern .hut-contact-service:hover .hut-contact-service__action {
+    color: var(--hut-color-heading);
+  }
+
   /* News */
   .hut-modern .hut-news-layout {
     display: grid;
@@ -1744,6 +1843,10 @@
     }
 
     .hut-modern .hut-news-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hut-modern .hut-contact-services__grid {
       grid-template-columns: 1fr;
     }
 
