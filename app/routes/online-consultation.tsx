@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { AltchaWidgetElement } from "altcha/types/generic";
-import type { Route } from "./+types/complaints-and-feedback";
+import type { Route } from "./+types/online-consultation";
 import { useEffect, useRef, useState } from "react";
 import { data, useFetcher, useRevalidator } from "react-router";
 import type {} from "altcha/types/react";
@@ -13,38 +13,37 @@ import { Header } from "../components/home/Header";
 import { cx, Icon, styles as homeStyles } from "../components/home/common";
 import pageStyles from "../complaints-and-feedback.module.css";
 import {
-  complaintActionSchema,
-  complaintFormSchema,
-  departmentOptions,
-  feedbackTypeOptions,
-  type ComplaintActionResult,
-  type ComplaintFieldErrors,
-  type ComplaintFieldName,
-  type ComplaintFormValues,
-} from "../lib/complaints";
-import {
-  createAltchaChallenge,
-  insertComplaintSubmission,
-  verifyAltchaChallenge,
-} from "../lib/complaints.server";
+  consultationActionSchema,
+  consultationFormSchema,
+  facultyOptions,
+  genderOptions,
+  majorOptions,
+  maritalStatusOptions,
+  type ConsultationActionResult,
+  type ConsultationFieldErrors,
+  type ConsultationFieldName,
+  type ConsultationFormValues,
+} from "../lib/consultation";
+import { createAltchaChallenge, verifyAltchaChallenge } from "../lib/complaints.server";
+import { insertConsultationSubmission } from "../lib/consultation.server";
 
-const defaultValues = {
-  firstName: "",
-  lastName: "",
-  mobile: "",
+const defaultValues: ConsultationFormValues = {
+  gender: "unknown",
+  age: "",
+  maritalStatus: "unknown",
   email: "",
-  studentId: "",
-  department: "",
-  feedbackType: "",
-  message: "",
-} as unknown as ComplaintFormValues;
+  mobile: "",
+  faculty: "unknown",
+  major: "unknown",
+  question: "",
+};
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "ثبت شکایات و پیشنهادات | دانشگاه صنعتی همدان" },
+    { title: "مشاوره آنلاین | دانشگاه صنعتی همدان" },
     {
       name: "description",
-      content: "ثبت شکایات، پیشنهادات و انتقادات در دانشگاه صنعتی همدان",
+      content: "ثبت پرسش برای دریافت مشاوره آنلاین از دانشگاه صنعتی همدان",
     },
   ];
 }
@@ -70,13 +69,13 @@ function formDataToRecord(formData: FormData) {
 }
 
 function fieldErrorsFromZod(error: z.ZodError) {
-  const errors: ComplaintFieldErrors = {};
+  const errors: ConsultationFieldErrors = {};
 
   for (const issue of error.issues) {
     const field = issue.path[0];
 
     if (typeof field === "string" && field !== "altcha" && field !== "website") {
-      const fieldName = field as ComplaintFieldName;
+      const fieldName = field as ConsultationFieldName;
       if (!errors[fieldName]) errors[fieldName] = issue.message;
     }
   }
@@ -86,33 +85,37 @@ function fieldErrorsFromZod(error: z.ZodError) {
 
 export async function action({ request }: Route.ActionArgs) {
   const values = formDataToRecord(await request.formData());
-  const parsed = complaintActionSchema.safeParse(values);
+  const parsed = consultationActionSchema.safeParse(values);
 
   if (!parsed.success) {
-    return data<ComplaintActionResult>(
-      { ok: false, errors: fieldErrorsFromZod(parsed.error), formError: "لطفاً اطلاعات فرم را بررسی کنید." },
+    return data<ConsultationActionResult>(
+      {
+        ok: false,
+        errors: fieldErrorsFromZod(parsed.error),
+        formError: "لطفاً اطلاعات فرم را بررسی کنید.",
+      },
       { status: 400 },
     );
   }
 
   if (parsed.data.website) {
-    return data<ComplaintActionResult>({ ok: false, formError: "ارسال درخواست امکان‌پذیر نیست." }, { status: 400 });
+    return data<ConsultationActionResult>({ ok: false, formError: "ارسال درخواست امکان‌پذیر نیست." }, { status: 400 });
   }
 
   if (!(await verifyAltchaChallenge(parsed.data.altcha))) {
-    return data<ComplaintActionResult>(
+    return data<ConsultationActionResult>(
       { ok: false, formError: "تأیید امنیتی ناموفق بود. دوباره تلاش کنید." },
       { status: 400 },
     );
   }
 
   try {
-    const trackingCode = await insertComplaintSubmission(parsed.data);
-    return data<ComplaintActionResult>({ ok: true, trackingCode }, { status: 201 });
+    const trackingCode = await insertConsultationSubmission(parsed.data);
+    return data<ConsultationActionResult>({ ok: true, trackingCode }, { status: 201 });
   } catch (error) {
-    console.error("Complaint submission failed", error);
-    return data<ComplaintActionResult>(
-      { ok: false, formError: "ثبت درخواست انجام نشد. لطفاً چند لحظه بعد دوباره تلاش کنید." },
+    console.error("Online consultation submission failed", error);
+    return data<ConsultationActionResult>(
+      { ok: false, formError: "ثبت پرسش انجام نشد. لطفاً چند لحظه بعد دوباره تلاش کنید." },
       { status: 500 },
     );
   }
@@ -139,6 +142,10 @@ function OptionalLabel({ children, required = false }: { children: string; requi
   );
 }
 
+function SelectChevron() {
+  return <Icon name="chevron" className={pageStyles.selectChevron} />;
+}
+
 function SuccessCard({ trackingCode, onNewSubmission }: { trackingCode: string; onNewSubmission: () => void }) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 
@@ -163,13 +170,13 @@ function SuccessCard({ trackingCode, onNewSubmission }: { trackingCode: string; 
   }
 
   return (
-    <section className={pageStyles.successCard} aria-labelledby="feedbackSuccessTitle">
+    <section className={pageStyles.successCard} aria-labelledby="consultationSuccessTitle">
       <div className={pageStyles.successContent}>
         <span className={pageStyles.successMark} aria-hidden="true">
           ✓
         </span>
-        <h2 id="feedbackSuccessTitle">درخواست شما با موفقیت ثبت شد</h2>
-        <p>از همراهی شما سپاسگزاریم. کد پیگیری درخواست خود را برای پیگیری‌های بعدی نگه دارید.</p>
+        <h2 id="consultationSuccessTitle">پرسش شما با موفقیت ثبت شد</h2>
+        <p>از همراهی شما سپاسگزاریم. کد پیگیری پرسش خود را برای پیگیری‌های بعدی نگه دارید.</p>
         <span className={pageStyles.trackingLabel}>کد پیگیری</span>
         <div className={pageStyles.trackingRow}>
           <code className={pageStyles.trackingCode} dir="ltr">
@@ -188,7 +195,7 @@ function SuccessCard({ trackingCode, onNewSubmission }: { trackingCode: string; 
             type="button"
             onClick={onNewSubmission}
           >
-            ثبت درخواست جدید
+            ثبت پرسش جدید
           </button>
         </div>
       </div>
@@ -196,8 +203,8 @@ function SuccessCard({ trackingCode, onNewSubmission }: { trackingCode: string; 
   );
 }
 
-export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentProps) {
-  const fetcher = useFetcher<ComplaintActionResult>();
+export default function OnlineConsultation({ loaderData }: Route.ComponentProps) {
+  const fetcher = useFetcher<ConsultationActionResult>();
   const revalidator = useRevalidator();
   const formRef = useRef<HTMLFormElement>(null);
   const altchaRef = useRef<AltchaWidgetElement | null>(null);
@@ -214,8 +221,8 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
     reset,
     setError,
     formState: { errors },
-  } = useForm<ComplaintFormValues>({
-    resolver: zodResolver(complaintFormSchema),
+  } = useForm<ConsultationFormValues>({
+    resolver: zodResolver(consultationFormSchema),
     defaultValues,
     mode: "onBlur",
   });
@@ -276,7 +283,7 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
 
     setFormError(result.formError);
     for (const [field, message] of Object.entries(result.errors ?? {})) {
-      setError(field as ComplaintFieldName, { message });
+      setError(field as ConsultationFieldName, { message });
     }
     verifiedCaptchaPayloadRef.current = null;
     setCaptchaStatus("idle");
@@ -366,38 +373,38 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
   const submitLabel = isCaptchaVerifying
     ? "در حال بررسی امنیتی…"
     : fetcher.state !== "idle"
-      ? "در حال ثبت درخواست…"
-      : "ثبت و ارسال پیام";
+      ? "در حال ثبت پرسش…"
+      : "ثبت و ارسال پرسش";
   const challenge = JSON.stringify(loaderData.challenge);
 
   return (
     <div className={cx(homeStyles["hut-modern"], pageStyles.page)} id="hutModernPage">
-      <a className={homeStyles["hut-skip-link"]} href="#hut-feedback-main">
+      <a className={homeStyles["hut-skip-link"]} href="#hut-consultation-main">
         پرش به محتوای اصلی
       </a>
 
       <Header />
 
-      <main id="hut-feedback-main">
-        <section className={pageStyles.hero} aria-labelledby="feedbackPageTitle">
+      <main id="hut-consultation-main">
+        <section className={pageStyles.hero} aria-labelledby="consultationPageTitle">
           <div className={cx(homeStyles["hut-container"], pageStyles.heroInner)}>
             <div className={pageStyles.heroCopy}>
-              <span className={homeStyles["hut-eyebrow"]}>سامانه ارتباط با دانشگاه</span>
-              <h1 id="feedbackPageTitle">ثبت شکایات و پیشنهادات</h1>
+              <span className={homeStyles["hut-eyebrow"]}>ارتباط مستقیم با دانشگاه</span>
+              <h1 id="consultationPageTitle">مشاوره آنلاین</h1>
               <p className={pageStyles.heroLead}>
-                دیدگاه‌ها و تجربه‌های خود را با ما در میان بگذارید تا برای بهبود خدمات دانشگاه بررسی و پیگیری شود.
+                پرسش خود را با ما در میان بگذارید تا برای بررسی و پاسخ‌گویی به واحد مرتبط ارجاع شود.
               </p>
             </div>
           </div>
         </section>
 
-        <section className={pageStyles.main} aria-labelledby="feedbackFormSectionTitle">
+        <section className={pageStyles.main} aria-labelledby="consultationFormSectionTitle">
           <div className={homeStyles["hut-container"]}>
             <div className={pageStyles.sectionHeading}>
               <div>
-                <span className={homeStyles["hut-eyebrow"]}>فرم ارتباط</span>
-                <h2 id="feedbackFormSectionTitle">پیام خود را ثبت کنید</h2>
-                <p>لطفاً اطلاعات زیر را با دقت وارد کنید. موارد ستاره‌دار الزامی هستند.</p>
+                <span className={homeStyles["hut-eyebrow"]}>فرم مشاوره</span>
+                <h2 id="consultationFormSectionTitle">پرسش خود را ثبت کنید</h2>
+                <p>اطلاعات تماس اختیاری است؛ سایر موارد به ارجاع دقیق‌تر پرسش کمک می‌کنند.</p>
               </div>
             </div>
 
@@ -407,8 +414,8 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
               ) : (
                 <div className={pageStyles.formCard}>
                   <div className={pageStyles.formHeader}>
-                    <h2>مشخصات درخواست</h2>
-                    <p>اطلاعات تماس اختیاری است، اما در صورت درج می‌تواند به پیگیری بهتر کمک کند.</p>
+                    <h2>اطلاعات پرسش</h2>
+                    <p>موارد ستاره‌دار برای ثبت پرسش الزامی هستند.</p>
                   </div>
 
                   <form ref={formRef} method="post" noValidate onSubmit={onSubmit}>
@@ -422,31 +429,86 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
 
                     <div className={pageStyles.formGrid}>
                       <div className={pageStyles.field}>
-                        <label htmlFor="firstName">
-                          <OptionalLabel required>نام</OptionalLabel>
+                        <label htmlFor="gender">
+                          <OptionalLabel required>جنسیت</OptionalLabel>
                         </label>
-                        <input
-                          className={pageStyles.control}
-                          id="firstName"
-                          autoComplete="given-name"
-                          aria-invalid={Boolean(errors.firstName)}
-                          aria-describedby={errors.firstName ? "firstName-error" : undefined}
-                          {...register("firstName")}
-                        />
-                        <FieldError id="firstName" message={errors.firstName?.message} />
+                        <div className={pageStyles.selectWrap}>
+                          <select
+                            className={cx(pageStyles.control, pageStyles.selectControl)}
+                            id="gender"
+                            aria-invalid={Boolean(errors.gender)}
+                            aria-describedby={errors.gender ? "gender-error" : undefined}
+                            {...register("gender")}
+                          >
+                            {genderOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          <SelectChevron />
+                        </div>
+                        <FieldError id="gender" message={errors.gender?.message} />
                       </div>
 
                       <div className={pageStyles.field}>
-                        <label htmlFor="lastName">
-                          <OptionalLabel>نام خانوادگی</OptionalLabel>
+                        <label htmlFor="age">
+                          <OptionalLabel required>سن</OptionalLabel>
                         </label>
                         <input
-                          className={pageStyles.control}
-                          id="lastName"
-                          autoComplete="family-name"
-                          {...register("lastName")}
+                          className={cx(pageStyles.control, pageStyles.ltrControl)}
+                          id="age"
+                          inputMode="numeric"
+                          autoComplete="off"
+                          dir="ltr"
+                          maxLength={3}
+                          placeholder="۲۳"
+                          aria-invalid={Boolean(errors.age)}
+                          aria-describedby={errors.age ? "age-error" : undefined}
+                          {...register("age")}
                         />
-                        <FieldError id="lastName" message={errors.lastName?.message} />
+                        <FieldError id="age" message={errors.age?.message} />
+                      </div>
+
+                      <div className={pageStyles.field}>
+                        <label htmlFor="maritalStatus">
+                          <OptionalLabel required>وضعیت تأهل</OptionalLabel>
+                        </label>
+                        <div className={pageStyles.selectWrap}>
+                          <select
+                            className={cx(pageStyles.control, pageStyles.selectControl)}
+                            id="maritalStatus"
+                            aria-invalid={Boolean(errors.maritalStatus)}
+                            aria-describedby={errors.maritalStatus ? "maritalStatus-error" : undefined}
+                            {...register("maritalStatus")}
+                          >
+                            {maritalStatusOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          <SelectChevron />
+                        </div>
+                        <FieldError id="maritalStatus" message={errors.maritalStatus?.message} />
+                      </div>
+
+                      <div className={pageStyles.field}>
+                        <label htmlFor="email">
+                          <OptionalLabel>پست الکترونیکی</OptionalLabel>
+                        </label>
+                        <input
+                          className={cx(pageStyles.control, pageStyles.ltrControl)}
+                          id="email"
+                          type="email"
+                          autoComplete="email"
+                          dir="ltr"
+                          placeholder="example@hut.ac.ir"
+                          aria-invalid={Boolean(errors.email)}
+                          aria-describedby={errors.email ? "email-error" : undefined}
+                          {...register("email")}
+                        />
+                        <FieldError id="email" message={errors.email?.message} />
                       </div>
 
                       <div className={pageStyles.field}>
@@ -469,102 +531,65 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
                       </div>
 
                       <div className={pageStyles.field}>
-                        <label htmlFor="email">
-                          <OptionalLabel>ایمیل</OptionalLabel>
-                        </label>
-                        <input
-                          className={cx(pageStyles.control, pageStyles.ltrControl)}
-                          id="email"
-                          type="email"
-                          autoComplete="email"
-                          dir="ltr"
-                          placeholder="example@hut.ac.ir"
-                          aria-invalid={Boolean(errors.email)}
-                          aria-describedby={errors.email ? "email-error" : undefined}
-                          {...register("email")}
-                        />
-                        <FieldError id="email" message={errors.email?.message} />
-                      </div>
-
-                      <div className={pageStyles.field}>
-                        <label htmlFor="studentId">
-                          <OptionalLabel>شماره دانشجویی</OptionalLabel>
-                        </label>
-                        <input
-                          className={cx(pageStyles.control, pageStyles.ltrControl)}
-                          id="studentId"
-                          inputMode="numeric"
-                          autoComplete="off"
-                          dir="ltr"
-                          aria-invalid={Boolean(errors.studentId)}
-                          aria-describedby={errors.studentId ? "studentId-error" : undefined}
-                          {...register("studentId")}
-                        />
-                        <FieldError id="studentId" message={errors.studentId?.message} />
-                      </div>
-
-                      <div className={pageStyles.field}>
-                        <label htmlFor="department">
-                          <OptionalLabel required>واحد یا مسئول مرتبط</OptionalLabel>
+                        <label htmlFor="faculty">
+                          <OptionalLabel required>نام دانشکده</OptionalLabel>
                         </label>
                         <div className={pageStyles.selectWrap}>
                           <select
                             className={cx(pageStyles.control, pageStyles.selectControl)}
-                            id="department"
-                            aria-invalid={Boolean(errors.department)}
-                            aria-describedby={errors.department ? "department-error" : undefined}
-                            {...register("department")}
+                            id="faculty"
+                            aria-invalid={Boolean(errors.faculty)}
+                            aria-describedby={errors.faculty ? "faculty-error" : undefined}
+                            {...register("faculty")}
                           >
-                            <option value="">انتخاب کنید</option>
-                            {departmentOptions.map((department) => (
-                              <option key={department} value={department}>
-                                {department}
-                              </option>
-                            ))}
-                          </select>
-                          <Icon name="chevron" className={pageStyles.selectChevron} />
-                        </div>
-                        <FieldError id="department" message={errors.department?.message} />
-                      </div>
-
-                      <div className={pageStyles.field}>
-                        <label htmlFor="feedbackType">
-                          <OptionalLabel required>نوع پیام</OptionalLabel>
-                        </label>
-                        <div className={pageStyles.selectWrap}>
-                          <select
-                            className={cx(pageStyles.control, pageStyles.selectControl)}
-                            id="feedbackType"
-                            aria-invalid={Boolean(errors.feedbackType)}
-                            aria-describedby={errors.feedbackType ? "feedbackType-error" : undefined}
-                            {...register("feedbackType")}
-                          >
-                            <option value="">انتخاب کنید</option>
-                            {feedbackTypeOptions.map((option) => (
+                            {facultyOptions.map((option) => (
                               <option key={option.value} value={option.value}>
                                 {option.label}
                               </option>
                             ))}
                           </select>
-                          <Icon name="chevron" className={pageStyles.selectChevron} />
+                          <SelectChevron />
                         </div>
-                        <FieldError id="feedbackType" message={errors.feedbackType?.message} />
+                        <FieldError id="faculty" message={errors.faculty?.message} />
+                      </div>
+
+                      <div className={pageStyles.field}>
+                        <label htmlFor="major">
+                          <OptionalLabel required>نام رشته تحصیلی</OptionalLabel>
+                        </label>
+                        <div className={pageStyles.selectWrap}>
+                          <select
+                            className={cx(pageStyles.control, pageStyles.selectControl)}
+                            id="major"
+                            aria-invalid={Boolean(errors.major)}
+                            aria-describedby={errors.major ? "major-error" : undefined}
+                            {...register("major")}
+                          >
+                            {majorOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          <SelectChevron />
+                        </div>
+                        <FieldError id="major" message={errors.major?.message} />
                       </div>
                     </div>
 
                     <div className={pageStyles.fullField}>
-                      <label htmlFor="message">
-                        <OptionalLabel required>شرح پیام</OptionalLabel>
+                      <label htmlFor="question">
+                        <OptionalLabel required>پرسش شما</OptionalLabel>
                       </label>
                       <textarea
                         className={cx(pageStyles.control, pageStyles.textarea)}
-                        id="message"
-                        placeholder="شکایت، پیشنهاد یا انتقاد خود را بنویسید…"
-                        aria-invalid={Boolean(errors.message)}
-                        aria-describedby={errors.message ? "message-error" : undefined}
-                        {...register("message")}
+                        id="question"
+                        placeholder="پرسش یا درخواست مشاوره خود را با جزئیات بنویسید…"
+                        aria-invalid={Boolean(errors.question)}
+                        aria-describedby={errors.question ? "question-error" : undefined}
+                        {...register("question")}
                       />
-                      <FieldError id="message" message={errors.message?.message} />
+                      <FieldError id="question" message={errors.question?.message} />
                     </div>
 
                     <div className={pageStyles.captchaSection}>
@@ -631,21 +656,21 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
                 </div>
               )}
 
-              <aside className={pageStyles.infoCard} aria-labelledby="feedbackGuideTitle">
-                <span className={homeStyles["hut-eyebrow"]}>راهنمای ثبت درخواست</span>
-                <h2 id="feedbackGuideTitle">درخواست شما چگونه پیگیری می‌شود؟</h2>
-                <p className={pageStyles.infoIntro}>پس از ارسال موفق، کد پیگیری یکتای خود را مشاهده و ذخیره کنید.</p>
+              <aside className={pageStyles.infoCard} aria-labelledby="consultationGuideTitle">
+                <span className={homeStyles["hut-eyebrow"]}>راهنمای مشاوره</span>
+                <h2 id="consultationGuideTitle">پرسش شما چگونه بررسی می‌شود؟</h2>
+                <p className={pageStyles.infoIntro}>پس از ثبت موفق، کد پیگیری پرسش خود را مشاهده و ذخیره کنید.</p>
                 <ol className={pageStyles.steps}>
                   <li>
                     <div>
-                      <strong>فرم را کامل کنید</strong>
-                      <span>موضوع و واحد مرتبط را انتخاب کنید و شرح روشنی از پیام خود بنویسید.</span>
+                      <strong>اطلاعات پایه را وارد کنید</strong>
+                      <span>اطلاعات تحصیلی به ارجاع پرسش شما به فرد یا واحد مناسب کمک می‌کند.</span>
                     </div>
                   </li>
                   <li>
                     <div>
-                      <strong>پیام ارسال می‌شود</strong>
-                      <span>درخواست شما در سامانه دانشگاه ثبت و برای بررسی آماده می‌شود.</span>
+                      <strong>پرسش ارسال می‌شود</strong>
+                      <span>پرسش شما در سامانه دانشگاه ثبت و برای بررسی آماده می‌شود.</span>
                     </div>
                   </li>
                   <li>
@@ -656,7 +681,7 @@ export default function ComplaintsAndFeedback({ loaderData }: Route.ComponentPro
                   </li>
                 </ol>
                 <p className={pageStyles.privacyNote}>
-                  اطلاعات شما فقط برای بررسی و پیگیری درخواست ثبت‌شده استفاده می‌شود.
+                  اطلاعات شما فقط برای بررسی و پاسخ‌گویی به پرسش ثبت‌شده استفاده می‌شود.
                 </p>
               </aside>
             </div>

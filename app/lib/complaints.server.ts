@@ -10,7 +10,7 @@ import { normalizeComplaintValues, type ComplaintFormValues } from "./complaints
 const challengeLifetimeMs = 5 * 60 * 1000;
 const trackingAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-export async function createComplaintChallenge() {
+export async function createAltchaChallenge() {
   return createChallenge({
     algorithm: "PBKDF2/SHA-256",
     cost: 5_000,
@@ -42,7 +42,7 @@ function isAltchaPayload(value: unknown): value is { challenge: Challenge; solut
   return isRecord(value.challenge) && isRecord(value.solution);
 }
 
-export async function verifyComplaintChallenge(value: string) {
+export async function verifyAltchaChallenge(value: string) {
   try {
     const payload = decodeAltchaPayload(value);
     const result = await verifySolution({
@@ -74,8 +74,8 @@ function randomTrackingSuffix() {
   return Array.from({ length: 12 }, () => trackingAlphabet[randomInt(0, trackingAlphabet.length)]).join("");
 }
 
-export function generateTrackingCode(date = new Date()) {
-  return `HUT-${solarHijriDateCode(date)}-${randomTrackingSuffix()}`;
+export function generateTrackingCode(prefix = "HUT", date = new Date()) {
+  return `${prefix}-${solarHijriDateCode(date)}-${randomTrackingSuffix()}`;
 }
 
 export async function insertComplaintSubmission(values: ComplaintFormValues) {
