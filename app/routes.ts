@@ -5,4 +5,5 @@ export default [
   route("complaints-and-feedback", "routes/complaints-and-feedback.tsx"),
   route("online-consultation", "routes/online-consultation.tsx"),
   route("privacy-and-data-protection", "routes/privacy-and-data-protection.tsx"),
+  route("healthz", "routes/healthz.ts"),
 ] satisfies RouteConfig;

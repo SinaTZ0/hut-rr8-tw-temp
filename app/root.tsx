@@ -10,6 +10,28 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 
+const themeInitializationScript = `
+  (() => {
+    let savedTheme = null;
+
+    try {
+      savedTheme = window.localStorage.getItem("hut-color-theme");
+    } catch {
+      // Continue with the system preference when storage is unavailable.
+    }
+
+    try {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      const initialTheme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : systemTheme;
+
+      document.documentElement.dataset.hutTheme = initialTheme;
+      document.documentElement.style.colorScheme = initialTheme;
+    } catch {
+      // The CSS prefers-color-scheme fallback remains active.
+    }
+  })();
+`;
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -25,11 +47,12 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fa" dir="rtl">
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#073b4c" />
+        <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
         <Meta />
         <Links />
       </head>

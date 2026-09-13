@@ -1,5 +1,11 @@
 .DS_Store
 .env
+.env.*
+!.env.example
+/certs/
+/secrets/
+/ssl1405/
+/.deploy.lock
 /node_modules/
 
 # React Router
