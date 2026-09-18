@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import hutLogo from "./assets/hut-logo.png";
 import "./app.css";
 
 const themeInitializationScript = `
@@ -33,6 +34,7 @@ const themeInitializationScript = `
 `;
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", type: "image/png", href: hutLogo },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
